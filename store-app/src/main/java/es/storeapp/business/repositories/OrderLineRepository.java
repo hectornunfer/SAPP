@@ -11,10 +11,12 @@ public class OrderLineRepository extends AbstractRepository<OrderLine>{
     private static final String FIND_BY_USER_AND_PRODUCT_QUERY = 
             "SELECT COUNT(*) FROM OrderLine o WHERE " +
             "o.order.state = es.storeapp.business.entities.OrderState.COMPLETED " + 
-            "AND o.order.user.id = {0} AND o.product.id = {1}";
+            "AND o.order.user.id = :userId AND o.product.id = :productId";
 
     public boolean findIfUserBuyProduct(Long userId, Long productId) {
-        Query query = entityManager.createQuery(MessageFormat.format(FIND_BY_USER_AND_PRODUCT_QUERY, userId, productId));
+        Query query = entityManager.createQuery(FIND_BY_USER_AND_PRODUCT_QUERY);
+        query.setParameter("userId",userId);
+        query.setParameter("productId",productId);
         return ((Long) query.getSingleResult()) > 0;
     }
     

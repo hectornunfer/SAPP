@@ -9,11 +9,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class OrderRepository extends AbstractRepository<Order> {
     private static final String FIND_BY_USER_QUERY = 
-            "SELECT o FROM Order o WHERE o.user.id = {0} ORDER BY o.timestamp DESC";
+            "SELECT o FROM Order o WHERE o.user.id = :id ORDER BY o.timestamp DESC";
         
     @SuppressWarnings("unchecked")
     public List<Order> findByUserId(Long userId) {
-        Query query = entityManager.createQuery(MessageFormat.format(FIND_BY_USER_QUERY, userId));
+        Query query = entityManager.createQuery(FIND_BY_USER_QUERY);
+        query.setParameter("id", userId);
         return (List<Order>) query.getResultList();
     }
    
