@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Base64;
 import java.util.Locale;
+
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -41,6 +43,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.apache.tika.Tika;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 public class UserController {
@@ -158,7 +162,18 @@ public class UserController {
         }
         return Constants.SEND_REDIRECT + Constants.ROOT_ENDPOINT;
     }
-
+    private boolean isValidImage(MultipartFile imageFile) {
+        if (imageFile != null && !imageFile.isEmpty()) {
+            try {
+                Tika tika = new Tika();
+                String detectedType = tika.detect(imageFile.getBytes());
+                return detectedType != null && detectedType.startsWith("image/");
+            } catch (Exception e) {
+                e.printStackTrace(); // Manejar la excepción adecuadamente
+            }
+        }
+        return false;
+    }
     @PostMapping(Constants.REGISTRATION_ENDPOINT)
     public String doRegister(@Valid @ModelAttribute(Constants.USER_PROFILE_FORM) UserProfileForm userProfileForm,
                              BindingResult result,
@@ -173,6 +188,11 @@ public class UserController {
         }
         User user;
         try {
+            if(userProfileForm.getImage() != null){
+                if (!isValidImage(userProfileForm.getImage())){
+                    throw new IOException();
+                }
+            }
             user = userService.create(userProfileForm.getName(), userProfileForm.getEmail(),
                     userProfileForm.getPassword(), userProfileForm.getAddress(),
                     userProfileForm.getImage() != null ? userProfileForm.getImage().getOriginalFilename() : null,
@@ -206,6 +226,11 @@ public class UserController {
         }
         User updatedUser;
         try {
+            if(userProfileForm.getImage() != null){
+                if (!isValidImage(userProfileForm.getImage())){
+                    throw new IOException();
+                }
+            }
             updatedUser = userService.update(user.getUserId(), userProfileForm.getName(), userProfileForm.getEmail(),
                     userProfileForm.getAddress(),
                     userProfileForm.getImage() != null ? userProfileForm.getImage().getOriginalFilename() : null,
