@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Base64;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.Cookie;
@@ -174,6 +176,53 @@ public class UserController {
         }
         return false;
     }
+    private boolean validarContrasena(String contrasena) {
+        // Longitud mínima de la contraseña
+        int longitudMinima = 8;
+
+        // Verificar si la contraseña tiene al menos 8 caracteres
+        if (contrasena.length() < longitudMinima) {
+            System.out.println("La contraseña debe tener al menos 8 caracteres.");
+            return false;
+        }
+
+        // Verificar si la contraseña contiene al menos una letra mayúscula
+        Pattern mayuscula = Pattern.compile("[A-Z]");
+        Matcher matcherMayuscula = mayuscula.matcher(contrasena);
+        if (!matcherMayuscula.find()) {
+            System.out.println("La contraseña debe contener al menos una letra mayúscula.");
+            return false;
+        }
+
+        // Verificar si la contraseña contiene al menos una letra minúscula
+        Pattern minuscula = Pattern.compile("[a-z]");
+        Matcher matcherMinuscula = minuscula.matcher(contrasena);
+        if (!matcherMinuscula.find()) {
+            System.out.println("La contraseña debe contener al menos una letra minúscula.");
+            return false;
+        }
+
+        // Verificar si la contraseña contiene al menos un número
+        Pattern numero = Pattern.compile("[0-9]");
+        Matcher matcherNumero = numero.matcher(contrasena);
+        if (!matcherNumero.find()) {
+            System.out.println("La contraseña debe contener al menos un número.");
+            return false;
+        }
+
+        // Verificar si la contraseña contiene al menos un carácter especial
+        Pattern caracterEspecial = Pattern.compile("[!@#$%^&*(),.?\":{}|<>]");
+        Matcher matcherCaracterEspecial = caracterEspecial.matcher(contrasena);
+        if (!matcherCaracterEspecial.find()) {
+            System.out.println("La contraseña debe contener al menos un carácter especial (!@#$%^&*(),.?\":{}|<>).");
+            return false;
+        }
+
+        // Si la contraseña cumple con todos los requisitos, retorna true
+        System.out.println("La contraseña es válida.");
+        return true;
+    }
+
     @PostMapping(Constants.REGISTRATION_ENDPOINT)
     public String doRegister(@Valid @ModelAttribute(Constants.USER_PROFILE_FORM) UserProfileForm userProfileForm,
                              BindingResult result,
@@ -190,8 +239,11 @@ public class UserController {
         try {
             if(!userProfileForm.getImage().isEmpty()){
                 if (!isValidImage(userProfileForm.getImage())){
-                    throw new IOException();
+                    throw new IOException("Formato de imágen invalido.");
                 }
+            }
+            if(!validarContrasena(userProfileForm.getPassword())){
+                throw new IOException("Contraseña no robusta.");
             }
             user = userService.create(userProfileForm.getName(), userProfileForm.getEmail(),
                     userProfileForm.getPassword(), userProfileForm.getAddress(),
@@ -228,7 +280,7 @@ public class UserController {
         try {
             if(!userProfileForm.getImage().isEmpty()){
                 if (!isValidImage(userProfileForm.getImage())){
-                    throw new IOException();
+                    throw new IOException("Formato de imágen invalido.");
                 }
             }
             updatedUser = userService.update(user.getUserId(), userProfileForm.getName(), userProfileForm.getEmail(),
@@ -269,6 +321,9 @@ public class UserController {
         }
         User updatedUser;
         try {
+            if(!validarContrasena(passwordForm.getPassword())){
+                throw new IOException("Contraseña no robusta.");
+            }
             updatedUser = userService.changePassword(user.getUserId(), passwordForm.getOldPassword(), passwordForm.getPassword());
             session.setAttribute(Constants.USER_SESSION, updatedUser);
             redirectAttributes.addFlashAttribute(Constants.SUCCESS_MESSAGE, messageSource.getMessage(
@@ -278,6 +333,8 @@ public class UserController {
         } catch (AuthenticationException ex) {
             return errorHandlingUtils.handleAuthenticationException(ex, user.getEmail(), 
                     Constants.PASSWORD_PAGE, model, locale);
+        } catch (IOException ex) {
+            return errorHandlingUtils.handleUnexpectedException(ex, model);
         }
         return Constants.SEND_REDIRECT + Constants.ROOT_ENDPOINT;
     }
