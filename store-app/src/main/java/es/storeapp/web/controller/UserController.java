@@ -188,7 +188,7 @@ public class UserController {
         }
         User user;
         try {
-            if(userProfileForm.getImage() != null){
+            if(!userProfileForm.getImage().isEmpty()){
                 if (!isValidImage(userProfileForm.getImage())){
                     throw new IOException();
                 }
@@ -226,7 +226,7 @@ public class UserController {
         }
         User updatedUser;
         try {
-            if(userProfileForm.getImage() != null){
+            if(!userProfileForm.getImage().isEmpty()){
                 if (!isValidImage(userProfileForm.getImage())){
                     throw new IOException();
                 }
