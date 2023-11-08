@@ -120,7 +120,19 @@ public class UserController {
         model.addAttribute(Constants.RESET_PASSWORD_FORM, form);
         return Constants.RESET_PASSWORD_PAGE;
     }
-    
+    private String localNext(String next) {
+        if (next != null && next.trim().length() > 0) {
+            // Verificar si la URL comienza con http://localhost:8888
+            if (next.startsWith("http://localhost:8888")) {
+                return Constants.SEND_REDIRECT + next;
+            } else {
+                // Si la URL no es válida, redirigir a una página por defecto
+                return Constants.SEND_REDIRECT + "http://localhost:8888";
+            }
+        }
+        // Si next es null o vacío, puedes manejarlo según tus necesidades
+        return Constants.SEND_REDIRECT + "http://localhost:8888";
+    }
     @PostMapping(Constants.LOGIN_ENDPOINT)
     public String doLogin(@Valid @ModelAttribute LoginForm loginForm, 
                           BindingResult result,
@@ -160,7 +172,13 @@ public class UserController {
                     Constants.LOGIN_PAGE, model, locale);
         }
         if (next != null && next.trim().length() > 0) {
-            return Constants.SEND_REDIRECT + next;
+            // Verificar si la URL comienza con http://localhost:8888
+            if (next.startsWith("http://localhost:8888")) {
+                return Constants.SEND_REDIRECT + next;
+            } else {
+                // Si la URL no es válida, redirigir a una página por defecto
+                return Constants.SEND_REDIRECT + Constants.ROOT_ENDPOINT;
+            }
         }
         return Constants.SEND_REDIRECT + Constants.ROOT_ENDPOINT;
     }
