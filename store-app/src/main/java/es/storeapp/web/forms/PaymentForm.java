@@ -1,12 +1,24 @@
 package es.storeapp.web.forms;
 
+import jakarta.validation.constraints.*;
+
 public class PaymentForm {
-    
+
+    @NotNull(message = "La opción de tarjeta de crédito predeterminada no puede ser nula")
     private Boolean defaultCreditCard;
+
+    @NotBlank(message = "El número de tarjeta de crédito no puede estar en blanco")
     private String creditCard;
+
+    @NotNull(message = "El CVV no puede ser nulo")
     private Integer cvv;
+
+    @NotNull(message = "El mes de vencimiento no puede ser nulo")
     private Integer expirationMonth;
+
+    @NotNull(message = "El año de vencimiento no puede ser nulo")
     private Integer expirationYear;
+
     private Boolean save;
 
     public Boolean getDefaultCreditCard() {

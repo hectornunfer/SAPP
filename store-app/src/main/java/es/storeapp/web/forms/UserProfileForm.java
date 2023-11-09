@@ -1,23 +1,27 @@
 package es.storeapp.web.forms;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import org.springframework.web.multipart.MultipartFile;
 
 public class UserProfileForm {
 
-    @NotNull
-    @Size(min=4)
+    @NotNull(message = "El nombre no puede ser nulo")
+    @NotBlank(message = "El nombre no puede estar en blanco")
+    @Size(min = 4, message = "El nombre debe tener al menos 4 caracteres")
     private String name;
-    
-    @NotNull
+
+    @NotNull(message = "El correo electrónico no puede ser nulo")
+    @NotBlank(message = "El correo electrónico no puede estar en blanco")
+    @Email(message = "Debe ingresar una dirección de correo electrónico válida")
     private String email;
-    
+
+
     private String password;
-    
-    @NotNull
+
+    @NotNull(message = "La dirección no puede ser nula")
+    @NotBlank(message = "La dirección no puede estar en blanco")
     private String address;
-    
+
     private MultipartFile image;
 
     public UserProfileForm() {
@@ -28,7 +32,7 @@ public class UserProfileForm {
         this.email = email;
         this.address = address;
     }
-    
+
     public String getName() {
         return name;
     }
@@ -67,6 +71,6 @@ public class UserProfileForm {
 
     public void setImage(MultipartFile image) {
         this.image = image;
-    }    
-    
+    }
+
 }

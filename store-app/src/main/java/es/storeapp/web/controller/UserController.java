@@ -432,11 +432,10 @@ public class UserController {
             redirectAttributes.addFlashAttribute(Constants.SUCCESS_MESSAGE, messageSource.getMessage(
                     Constants.MAIL_SUCCESS_MESSAGE, new Object[] { email }, locale));
             
-        } catch (AuthenticationException ex) {
-            return errorHandlingUtils.handleAuthenticationException(ex, email, 
-                    Constants.SEND_EMAIL_PAGE, model, locale);
         } catch (Exception ex) {
-            return errorHandlingUtils.handleUnexpectedException(ex, model);
+            String message = messageSource.getMessage(Constants.MAIL_NOT_CONFIGURED_MESSAGE, new Object[]{}, locale);
+            model.addAttribute(Constants.ERROR_MESSAGE, message);
+            return Constants.SEND_EMAIL_PAGE;
         }
         return Constants.SEND_REDIRECT + Constants.SEND_EMAIL_ENDPOINT;
     }
