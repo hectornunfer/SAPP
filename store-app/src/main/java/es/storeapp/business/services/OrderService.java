@@ -115,6 +115,11 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
+    public Order findByOrderIdandUserId(Long orderid,Long userid) throws InstanceNotFoundException {
+        return orderRepository.findByUserIdandOrderId(userid,orderid);
+    }
+
+    @Transactional(readOnly = true)
     public boolean findIfUserBuyProduct(Long userId, Long productId) throws InstanceNotFoundException {
         User user = userRepository.findById(userId);
         if(logger.isDebugEnabled()) {
