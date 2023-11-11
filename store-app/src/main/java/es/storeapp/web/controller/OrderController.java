@@ -165,7 +165,7 @@ public class OrderController {
             } else {
                 order = orderService.pay(user, id, paymentForm.getCreditCard(), paymentForm.getCvv(),
                         paymentForm.getExpirationMonth(), paymentForm.getExpirationYear(), paymentForm.getSave());
-                if(paymentForm.getSave()) {
+                if(paymentForm.getSave() != null && paymentForm.getSave()) {
                     session.setAttribute(Constants.USER_SESSION, user);
                 }   
             }
