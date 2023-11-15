@@ -145,7 +145,7 @@ public class UserController {
         if (result.hasErrors()) {  
             errorHandlingUtils.handleInvalidFormError(result, 
                 Constants.REGISTRATION_INVALID_PARAMS_MESSAGE, model, locale);
-            return Constants.USER_PROFILE_PAGE;
+            return Constants.LOGIN_PAGE;
         }
         User user;
         try {
