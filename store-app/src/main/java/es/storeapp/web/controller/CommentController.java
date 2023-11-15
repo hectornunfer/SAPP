@@ -3,10 +3,13 @@ package es.storeapp.web.controller;
 import es.storeapp.business.entities.Comment;
 import es.storeapp.business.entities.User;
 import es.storeapp.business.exceptions.InstanceNotFoundException;
+import es.storeapp.business.services.OrderService;
 import es.storeapp.business.services.ProductService;
 import es.storeapp.common.Constants;
 import es.storeapp.web.exceptions.ErrorHandlingUtils;
 import es.storeapp.web.forms.CommentForm;
+
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Locale;
 import jakarta.servlet.http.HttpSession;
@@ -31,7 +34,8 @@ public class CommentController {
 
     @Autowired
     private ProductService productService;
-
+    @Autowired
+    private OrderService orderService;
     @Autowired
     private MessageSource messageSource;
     
@@ -70,14 +74,18 @@ public class CommentController {
                                   Locale locale, 
                                   Model model) {
         try {
-            System.out.println("\n\n\n\n " + commentForm.getText() + "\n\n\n\n");
+            if (!orderService.findIfUserBuyProduct(user.getUserId(), commentForm.getProductId())){
+                throw new IOException("El usuario no ha comprado el producto con el id introducido.");
+            }
             productService.comment(user, commentForm.getProductId(), commentForm.getText(), commentForm.getRating());
             String message = messageSource.getMessage(Constants.PRODUCT_COMMENT_CREATED, new Object[0], locale);
             redirectAttributes.addFlashAttribute(Constants.SUCCESS_MESSAGE, message);
             return Constants.SEND_REDIRECT + MessageFormat.format(Constants.PRODUCT_TEMPLATE,
-                commentForm.getProductId());
+                    commentForm.getProductId());
         } catch (InstanceNotFoundException ex) {
-           return errorHandlingUtils.handleInstanceNotFoundException(ex, model, locale);
+            return errorHandlingUtils.handleInstanceNotFoundException(ex, model, locale);
+        } catch (IOException ex) {
+            return errorHandlingUtils.handleUnexpectedException(ex, model);
         }
     }
     
