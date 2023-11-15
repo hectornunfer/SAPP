@@ -177,7 +177,7 @@ public class UserController {
         }
         if (next != null && next.trim().length() > 0) {
             // Verificar si la URL comienza con http://localhost:8888
-            if (next.startsWith("http://localhost:8888")) {
+            if (next.startsWith("https://localhost:8888")) {
                 return Constants.SEND_REDIRECT + next;
             } else {
                 // Si la URL no es válida, redirigir a una página por defecto
