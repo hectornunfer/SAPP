@@ -13,7 +13,8 @@ public class CSPInterceptor implements HandlerInterceptor {
             "default-src * 'self'; " +
             "img-src * 'self' data:; " +
             "script-src  * 'self' 'unsafe-eval' 'unsafe-inline'; " +
-            "style-src   * 'self' 'unsafe-inline';");
+            "style-src   * 'self' 'unsafe-inline';" +
+            "X-Frame-Options  'DENY';");
         return true;
     }
     
