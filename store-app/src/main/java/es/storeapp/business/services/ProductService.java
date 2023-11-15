@@ -13,6 +13,9 @@ import es.storeapp.common.ConfigurationParameters;
 import es.storeapp.common.Constants;
 import java.text.MessageFormat;
 import java.util.List;
+
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,7 +99,7 @@ public class ProductService {
             }
             product.setTotalScore(product.getTotalScore() - comment.getRating() + rating);
             comment.setRating(rating);
-            comment.setText(text);
+            comment.setText(Jsoup.clean(text, Safelist.basic()));
             comment.setTimestamp(System.currentTimeMillis());
             productRepository.update(product);
             return rateRepository.update(comment);
@@ -109,7 +112,7 @@ public class ProductService {
             comment.setUser(user);
             comment.setProduct(product);
             comment.setRating(rating);
-            comment.setText(text);
+            comment.setText(Jsoup.clean(text, Safelist.basic()));
             comment.setTimestamp(System.currentTimeMillis());
             product.setTotalComments(product.getTotalComments() + 1);
             product.setTotalScore(product.getTotalScore() + rating);

@@ -16,6 +16,9 @@ import es.storeapp.business.utils.ExceptionGenerationUtils;
 import es.storeapp.common.Constants;
 import java.text.MessageFormat;
 import java.util.List;
+
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +49,9 @@ public class OrderService {
     public Order create(User user, String name, String address, Integer price, List<Long> products) 
             throws InstanceNotFoundException {
         Order order = new Order();
-        order.setName(name);
+        order.setName(Jsoup.clean(name, Safelist.basic()));
         order.setUser(user);
-        order.setAddress(address != null ? address : user.getAddress());
+        order.setAddress(address != null ? (Jsoup.clean(address, Safelist.basic())) : user.getAddress());
         order.setPrice(price);
         order.setState(OrderState.PENDING);
         order.setTimestamp(System.currentTimeMillis());

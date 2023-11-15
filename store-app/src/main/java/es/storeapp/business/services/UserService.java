@@ -21,6 +21,8 @@ import java.util.UUID;
 import jakarta.annotation.PostConstruct;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.mail.HtmlEmail;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
 import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,7 +131,7 @@ public class UserService {
             throw exceptionGenerationUtils.toDuplicatedResourceException(Constants.EMAIL_FIELD, email,
                     Constants.DUPLICATED_INSTANCE_MESSAGE);
         }
-        User user = userRepository.create(new User(name, email, BCrypt.hashpw(password, BCrypt.gensalt()), address, image));
+        User user = userRepository.create(new User(Jsoup.clean(name, Safelist.basic()), Jsoup.clean(email, Safelist.basic()), BCrypt.hashpw(password, BCrypt.gensalt()), Jsoup.clean(address, Safelist.basic()), image));
         saveProfileImage(user.getUserId(), image, imageContents);
         return user;
     }
@@ -143,9 +145,9 @@ public class UserService {
             throw exceptionGenerationUtils.toDuplicatedResourceException(Constants.EMAIL_FIELD, email,
                     Constants.DUPLICATED_INSTANCE_MESSAGE);
         }
-        user.setName(name);
-        user.setEmail(email);
-        user.setAddress(address);
+        user.setName(Jsoup.clean(name, Safelist.basic()));
+        user.setEmail(Jsoup.clean(email, Safelist.basic()));
+        user.setAddress(Jsoup.clean(address, Safelist.basic()));
         if (image != null && image.trim().length() > 0 && imageContents != null) {
             try {
                 deleteProfileImage(id, user.getImage());

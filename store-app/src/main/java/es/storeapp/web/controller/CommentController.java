@@ -70,6 +70,7 @@ public class CommentController {
                                   Locale locale, 
                                   Model model) {
         try {
+            System.out.println("\n\n\n\n " + commentForm.getText() + "\n\n\n\n");
             productService.comment(user, commentForm.getProductId(), commentForm.getText(), commentForm.getRating());
             String message = messageSource.getMessage(Constants.PRODUCT_COMMENT_CREATED, new Object[0], locale);
             redirectAttributes.addFlashAttribute(Constants.SUCCESS_MESSAGE, message);
