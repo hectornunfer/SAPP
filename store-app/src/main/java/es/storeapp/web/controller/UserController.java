@@ -150,9 +150,9 @@ public class UserController {
         User user;
         try {
             user = userService.login(loginForm.getEmail(), loginForm.getPassword());
-            //session.invalidate();
+            session.invalidate();
             // Create a new session
-            //HttpSession newSession = request.getSession(true);
+            HttpSession newSession = request.getSession(true);
             session.setAttribute(Constants.USER_SESSION, user);
             if(logger.isDebugEnabled()) {
                 logger.debug(MessageFormat.format("User {0} logged in", user.getEmail()));
